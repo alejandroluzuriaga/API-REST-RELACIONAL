@@ -1,3 +1,4 @@
+# Libros
 | Solicitud HTTP | Endpoint         | Descripción                 |
 | -------------- | ---------------- | --------------------------- |
 | GET            | /libros          | Todos los libros           |
@@ -5,6 +6,15 @@
 | POST           | /libro           | Crear libro                |
 | PUT            | /libro/:id       | Actualizar libro por ID    |
 | DELETE         | /libro/:id       | Borrar libro por ID        |
+
+# Autores
+| Solicitud HTTP | Endpoint         | Descripción                 |
+| -------------- | ---------------- | --------------------------- |
+| GET            | /autores          | Todos los autores           |
+| GET            | /autores/id       | Autor por ID               |
+| POST           | /autores           | Crear autor                |
+| PUT            | /autores/:id       | Actualizar autor por ID    |
+| DELETE         | /autores/:id       | Borrar autor por ID        |
 
 Para crear o actualizar elementos, es necesario definir los campos en el body.
 
