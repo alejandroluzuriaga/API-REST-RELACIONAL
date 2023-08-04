@@ -13,6 +13,6 @@ app.use("/", mainRouter);
 const PORT = 4001;
 app.listen(PORT, () => {
   console.log(
-    `Servidor escuchando en el puerto ${PORT}: http://127.0.0.1:${PORT}`
+    `Servidor escuchando en el puerto ${PORT}: http://localhost:${PORT}`
   );
 });

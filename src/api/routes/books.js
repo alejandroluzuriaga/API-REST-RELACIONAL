@@ -1,9 +1,10 @@
 const express = require("express");
-const { getTodosLosLibros, getLibroPorID, crearLibro, actualizarLibro, eliminarLibro } = require("../controllers/books.js");
+const { getTodosLosLibros, getLibroPorID, crearLibro, actualizarLibro, eliminarLibro, getLibroPorIDyAutor } = require("../controllers/books.js");
 const router = express.Router();
 
 router.get("/", getTodosLosLibros)
 router.get("/:id", getLibroPorID)
+router.get("/populate/:id", getLibroPorIDyAutor)
 router.post("/", crearLibro)
 router.put("/:id", actualizarLibro)
 router.delete("/:id", eliminarLibro)

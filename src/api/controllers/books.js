@@ -33,7 +33,7 @@ const getTodosLosLibros = async (req, res) => {
     try {
       const libro = new Libro({
         name: req.body.name,
-        autor: req.body.autor,
+        nombreAutor: req.body.nombreAutor,
         anio_publicacion: req.body.anio_publicacion,
         genero: req.body.genero,
       });
@@ -49,12 +49,12 @@ const getTodosLosLibros = async (req, res) => {
   
   const actualizarLibro = async (req, res) => {
     const { id } = req.params;
-    const { name, autor, anio_publicacion, genero } = req.body;
+    const { name, nombreAutor, anio_publicacion, genero } = req.body;
   
     try {
       const actualizacion = {};
       if (name !== null) actualizacion.titulo = name;
-      if (autor !== null) actualizacion.autor = autor;
+      if (nombreAutor !== null) actualizacion.nombreAutor = nombreAutor;
       if (anio_publicacion !== null)
         actualizacion.anio_publicacion = anio_publicacion;
       if (genero !== null) actualizacion.genero = genero;
@@ -97,10 +97,43 @@ const getTodosLosLibros = async (req, res) => {
     }
   };
 
+  const getLibroPorIDyAutor = async (req, res) =>{
+    const { id } = req.params;
+    try {
+      const libro = await Libro.findById(id)
+      .populate({
+        path: 'autor',
+        model: 'Autor',
+        select: {
+          nombre: true,
+          librosEscritos: true
+        },
+        populate: {
+          path: 'librosEscritos',
+          model: 'Libro', // Cambia 'Libro' por el nombre de tu modelo de libros si es diferente
+          select: {
+            titulo: true,
+            anio_publicacion: true,
+            genero: true,
+          },
+        },
+      });
+  
+      if (!libro) {
+        return res.status(404).json({ error: "Este libro no está en la BD" });
+      } else {
+        return res.status(200).json({ data: libro });
+      }
+    } catch (err) {
+      console.log("API error:", err);
+      res.status(500).json({ data: "Unexpected server error" });
+    }
+  }
   module.exports = {
     getTodosLosLibros,
     getLibroPorID,
     crearLibro,
     actualizarLibro,
-    eliminarLibro
+    eliminarLibro,
+    getLibroPorIDyAutor
   }

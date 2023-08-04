@@ -1,9 +1,10 @@
 const express = require("express");
-const { getTodosLosAutores, getAutorPorID, crearAutor, actualizarAutor, eliminarAutor } = require("../controllers/authors.js");
+const { getTodosLosAutores, getAutorPorID, crearAutor, actualizarAutor, eliminarAutor, getAutorPorIDyLibrosEscritos } = require("../controllers/authors.js");
 const router = express.Router();
 
 router.get("/", getTodosLosAutores)
 router.get("/:id", getAutorPorID)
+router.get("/populate/:id", getAutorPorIDyLibrosEscritos)
 router.post("/", crearAutor)
 router.put("/:id", actualizarAutor)
 router.delete("/:id", eliminarAutor)
