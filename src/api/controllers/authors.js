@@ -64,13 +64,18 @@ const actualizarAutor = async (req, res) => {
         .json({ error: "No se proporcionaron campos para actualizar" });
     }
 
-    const autorActualizado = await Autor.findByIdAndUpdate(id, actualizacion, {
-      new: true,
-    });
+    const autorActualizado = await Autor.findByIdAndUpdate(id, actualizacion, {new: true,});
 
     if (!autorActualizado) {
       return res.status(404).json({ error: "Libro no encontrado" });
     }
+
+    await Promise.all( //Actualizar el nombre del autor en los libros que ha escrito
+      autorActualizado.librosEscritos.map(async (objectID) =>{
+        console.log(objectID.toString())
+        await Libro.findByIdAndUpdate(objectID.toString(), {nombreAutor: autorActualizado.nombre})
+      })
+    )
 
     res.status(200).json({ data: autorActualizado });
   } catch (err) {
@@ -85,10 +90,18 @@ const eliminarAutor = async (req, res) => {
     const autor = await Autor.findById(id);
 
     if (!autor) {
-      return res.status(404).json({ error: "No hay libros en la BD" });
+      return res.status(404).json({ error: "Este autor no está en la base de datos" });
     } else {
+    await Promise.all(  //Eliminar el campo "autor" de  todos los libros que haya escrito el autor a eliminar
+      autor.librosEscritos.map(async (objectID) => {
+        await Libro.findByIdAndUpdate(objectID.toString(), {
+          $set: { autor: null }
+        });
+      })
+    );
       await Autor.deleteOne({ _id: id });
-      return res.status(200).json({ data: `Autor borrado: ${id}` });
+
+      return res.status(200).json({ data: `Autor borrado: ${autor.get("nombre")}` });
     }
   } catch (err) {
     console.log("API error:", err);
@@ -134,10 +147,15 @@ const actualizarLibrosEscritosporIDs = async (req, res) => {
     const existe = existeIDenLibrosEscritos(autor.librosEscritos, idLibro) //Comprobar si la id del libro ya esta en el array de libros escritos del autor
     if (!existe) { //Libro no está en array
       await agregarLibroEscrito(idAutor, idLibro) //Agregar libro a libros escritos
-      if (libro.autor.toString() !== idAutor){ 
-        await eliminarLibroAutor(libro.autor.toString(), idLibro)//Eliminar el idLibro del autor anterior 
+      if (libro.autor){ //El campo autor no es null
+        if (libro.autor.toString() !== idAutor){ 
+          await eliminarLibroAutor(libro.autor.toString(), idLibro)//Eliminar el idLibro del autor anterior 
+          await actualizarInfoLibro(idAutor, idLibro, autor) //Actualizar los datos del libro (nombre e id del autor nuevo)
+        }
+      } else{ //El campo autor es null
         await actualizarInfoLibro(idAutor, idLibro, autor) //Actualizar los datos del libro (nombre e id del autor nuevo)
       }
+      
       return res.status(201).json({ data: `Libro agregado a la lista de libros de ${autor.get('nombre')}`, titulo: libro.get('titulo')  });
 
     } else {//Libro está en array
@@ -159,8 +177,8 @@ const agregarLibroEscrito = async (idAutor, idLibro) =>{
   })
 }
 
-const eliminarLibroAutor = async (idAutorAUX, idLibro) =>{
-  await Autor.findByIdAndUpdate(idAutorAUX, {
+const eliminarLibroAutor = async (idAutor, idLibro) =>{
+  await Autor.findByIdAndUpdate(idAutor, {
     $pull: {
       librosEscritos: new mongoose.Types.ObjectId(idLibro)
     }
@@ -185,5 +203,7 @@ module.exports = {
   actualizarAutor,
   eliminarAutor,
   getAutorPorIDyLibrosEscritos,
-  actualizarLibrosEscritosporIDs
+  actualizarLibrosEscritosporIDs,
+  eliminarLibroAutor,
+  agregarLibroEscrito
 };
