@@ -150,6 +150,7 @@ const actualizarLibrosEscritosporIDs = async (req, res) => {
   }
 };
 
+// Funciones auxiliares para controladores
 const agregarLibroEscrito = async (idAutor, idLibro) =>{
   await Autor.findByIdAndUpdate(idAutor, {
     $push: {
