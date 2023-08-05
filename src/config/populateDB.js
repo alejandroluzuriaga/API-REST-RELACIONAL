@@ -1,3 +1,4 @@
+require("./db.js")
 const seed = require("../api/seed/seed.js");
 const {Libro, Autor} = require("../api/models/models.js");
 
@@ -61,6 +62,8 @@ const main = async () => {
 
 main()
   .then(() => {
+    console.log("Base de datos llenada correctamente")
+    process.exit(1)
   })
   .catch((err) => {
     console.log("Error lanzando script!", err);

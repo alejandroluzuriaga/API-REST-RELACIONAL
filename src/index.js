@@ -1,5 +1,4 @@
 require("./config/db");
-require("./config/populateDB")
 
 const express = require("express");
 const mainRouter = require("./api/routes/mainRouter.js")
