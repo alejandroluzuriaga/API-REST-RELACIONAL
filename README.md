@@ -20,6 +20,7 @@
 | GET            | /autores/populate/:id | Autor por ID con libros escritos |
 | POST           | /autores           | Crear autor                |
 | PUT            | /autores/:id       | Actualizar autor por ID    |
+| PUT            | /autores/:idAutor/:idLibro       | Añadir o eliminar libro escrito por un autor    |
 | DELETE         | /autores/:id       | Borrar autor por ID        |
 
 

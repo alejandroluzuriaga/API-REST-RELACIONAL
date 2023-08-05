@@ -1,4 +1,6 @@
-const { Autor } = require("../models/models.js");
+const { Autor, Libro } = require("../models/models.js");
+const mongoose = require("mongoose")
+
 
 const getTodosLosAutores = async (req, res) => {
   try {
@@ -31,9 +33,12 @@ const getAutorPorID = async (req, res) => {
 
 const crearAutor = async (req, res) => {
   try {
+    if (!req.body.nombre) {
+      return res.status(500).json({ data: "Es necesario indicar el nombre del autor" });
+    }
     const autor = new Autor({
       nombre: req.body.nombre,
-      librosEscritos: req.body.librosEscritos,
+      librosEscritos: [],
     });
 
     await autor.save();
@@ -95,15 +100,15 @@ const getAutorPorIDyLibrosEscritos = async (req, res) => {
   const { id } = req.params;
   try {
     const autor = await Autor.findById(id)
-    .populate({
-      path: 'librosEscritos',
-      model: 'Libro',
-      select: {
-        titulo: true,
-        anio_publicacion: true,
-        genero: true,
-      }
-    });
+      .populate({
+        path: 'librosEscritos',
+        model: 'Libro',
+        select: {
+          titulo: true,
+          anio_publicacion: true,
+          genero: true,
+        }
+      });
 
     if (!autor) {
       return res.status(404).json({ error: "Este autor no está en la BD" });
@@ -116,6 +121,62 @@ const getAutorPorIDyLibrosEscritos = async (req, res) => {
   }
 };
 
+const actualizarLibrosEscritosporIDs = async (req, res) => {
+  const { idAutor, idLibro } = req.params;
+  try {
+    const autor = await Autor.findById(idAutor)
+    const libro = await Libro.findById(idLibro)
+
+    if (!autor || !libro) {
+      return res.status(404).json({ data: "Autor o libro inexistente en la BD" });
+    }
+
+    const existe = existeIDenLibrosEscritos(autor.librosEscritos, idLibro) //Comprobar si la id del libro ya esta en el array de libros escritos del autor
+    if (!existe) { //Libro no está en array
+      await agregarLibroEscrito(idAutor, idLibro) //Agregar libro a libros escritos
+      if (libro.autor.toString() !== idAutor){ 
+        await eliminarLibroAutor(libro.autor.toString(), idLibro)//Eliminar el idLibro del autor anterior 
+        await actualizarInfoLibro(idAutor, idLibro, autor) //Actualizar los datos del libro (nombre e id del autor nuevo)
+      }
+      return res.status(201).json({ data: `Libro agregado a la lista de libros de ${autor.get('nombre')}`, titulo: libro.get('titulo')  });
+
+    } else {//Libro está en array
+      await eliminarLibroAutor(idAutor, idLibro)
+      return res.status(200).json({ data: `Libro eliminado de la lista de libros de ${autor.get('nombre')}`, titulo: libro.get('titulo')  });
+    }
+  } catch (err) {
+    console.log("API error:", err);
+    res.status(500).json({ data: "Unexpected server error" });
+  }
+};
+
+const agregarLibroEscrito = async (idAutor, idLibro) =>{
+  await Autor.findByIdAndUpdate(idAutor, {
+    $push: {
+      librosEscritos: new mongoose.Types.ObjectId(idLibro)
+    }
+  })
+}
+
+const eliminarLibroAutor = async (idAutorAUX, idLibro) =>{
+  await Autor.findByIdAndUpdate(idAutorAUX, {
+    $pull: {
+      librosEscritos: new mongoose.Types.ObjectId(idLibro)
+    }
+  })
+}
+
+const actualizarInfoLibro = async (idAutor, idLibro, autor) =>{
+  await Libro.findByIdAndUpdate(idLibro, {
+    nombreAutor: autor.nombre,
+    autor: new mongoose.Types.ObjectId(idAutor)
+  })
+}
+
+const existeIDenLibrosEscritos = (libros, idLibro) => {
+  return libros.some(id => id.toString() === idLibro);
+}
+
 module.exports = {
   getTodosLosAutores,
   getAutorPorID,
@@ -123,4 +184,5 @@ module.exports = {
   actualizarAutor,
   eliminarAutor,
   getAutorPorIDyLibrosEscritos,
+  actualizarLibrosEscritosporIDs
 };

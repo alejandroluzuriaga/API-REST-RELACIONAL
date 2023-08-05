@@ -128,20 +128,23 @@ const seed = {
     }
   ],
   autores: [
-    { 
-      nombre: 'J.K. Rowling' 
+    {
+      nombre: 'Anónimo'
     },
-    { 
-      nombre: 'Jane Austen' 
+    {
+      nombre: 'J.K. Rowling'
     },
-    { 
-      nombre: 'J.R.R. Tolkien' 
+    {
+      nombre: 'Jane Austen'
     },
-    { 
-      nombre: 'Gabriel García Márquez' 
+    {
+      nombre: 'J.R.R. Tolkien'
     },
-    { 
-      nombre: 'Andy Weir' 
+    {
+      nombre: 'Gabriel García Márquez'
+    },
+    {
+      nombre: 'Andy Weir'
     },
     {
       nombre: "Carlos Ruiz Zafón"
