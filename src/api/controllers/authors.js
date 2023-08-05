@@ -1,7 +1,6 @@
 const { Autor, Libro } = require("../models/models.js");
 const mongoose = require("mongoose")
 
-
 const getTodosLosAutores = async (req, res) => {
   try {
     const autores = await Autor.find().lean();
