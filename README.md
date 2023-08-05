@@ -52,3 +52,4 @@
 * __DELETE */autores/:id*__
 
     Al eliminar un autor, el campo 'autor' (referencia a la id de su autor) de todos los libros que estén en el array de libros escritos del autor serán puestos a null. Esto es útil para mantener la existencia del libro, pero saber que su autor no ha sido creado aún. En este caso, la creación posterior de un autor con el mismo nombre no hará que el campo 'autor' del libro deje de ser null directamente. Para vincular nuevamente el libro con un autor, es necesario usar la función PUT /autores/:idAutor/:idLibro.
+    
