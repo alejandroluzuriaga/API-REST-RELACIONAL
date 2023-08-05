@@ -24,7 +24,7 @@
 | DELETE         | /autores/:id       | Borrar autor por ID        |
 
 --- 
-##Funciones notables e indicaciones:
+# Funciones notables e indicaciones:
 
 * POST /libro
     Al crear un libro, la bases de datos comprueba que se haya introducido un título, un nombre del autor, un año de publicación y un género, y después de crear el libro, comprueba si el autor ya existe en la base de datos. En caso positivo, introduce el libro en el array de libros escritos del autor. En caso contrario, será necesario crear el autor de forma manual con el mismo nombre y usar la función PUT /autores/:idAutor/:idLibro para añadirlo a los libros escritos del autor. 
