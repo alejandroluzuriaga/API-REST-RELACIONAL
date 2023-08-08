@@ -17,6 +17,7 @@ const getTodosLosAutores = async (req, res) => {
   }
 };
 
+
 const getAutorPorID = async (req, res) => {
   try {
     const { id } = req.params;
@@ -33,11 +34,23 @@ const getAutorPorID = async (req, res) => {
 
 const crearAutor = async (req, res) => {
   try {
-    if (!req.body.nombre) {
+    const {nombre} = req.body
+    if (!nombre) {
       return res.status(500).json({ data: "Es necesario indicar el nombre del autor" });
     }
+
+    const camposOK = validarCamposPermitidos(req.body)
+    if (!camposOK){
+      return res.status(400).json({error: "Campos incorrectos. Solo es necesario 'nombre' del autor"})
+    }
+
+    const existe = await Autor.findOne({ nombre: req.body.nombre }).lean();
+    if (existe) {
+      return res.status(400).json({ error: `Autor ya existente en la base de datos` });
+    }
+    
     const autor = new Autor({
-      nombre: req.body.nombre,
+      nombre: nombre,
       librosEscritos: [],
     });
 
@@ -55,6 +68,11 @@ const actualizarAutor = async (req, res) => {
   const { nombre } = req.body;
 
   try {
+
+    const camposOK = validarCamposPermitidos(req.body)
+    if (!camposOK){
+      return res.status(400).json({error: "Campos incorrectos. Solo puedes modificar 'nombre' del autor"})
+    }
     const actualizacion = {};
     if (nombre !== null) actualizacion.nombre = nombre;
 
@@ -194,6 +212,16 @@ const actualizarInfoLibro = async (idAutor, idLibro, autor) =>{
 
 const existeIDenLibrosEscritos = (libros, idLibro) => {
   return libros.some(id => id.toString() === idLibro);
+}
+
+const validarCamposPermitidos = (body) =>{
+  const camposPermitidos = ["nombre"];
+  for (const campo in body) {
+    if (!camposPermitidos.includes(campo)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 module.exports = {

@@ -31,7 +31,7 @@
 
 * __*POST /libro:*__
 
-    Al crear un libro, la bases de datos comprueba que se haya introducido un título, un nombre del autor, un año de publicación y un género, y después de crear el libro, comprueba si el autor ya existe en la base de datos. En caso positivo, introduce el libro en el array de libros escritos del autor. En caso contrario, será necesario crear el autor de forma manual con el mismo nombre y usar la función PUT /autores/:idAutor/:idLibro para añadirlo a los libros escritos del autor. 
+    Al crear un libro, la bases de datos comprueba que se haya introducido un título, un nombre del autor, un año de publicación y un género, y después de crear el libro, comprueba si el autor ya existe en la base de datos. En caso positivo, introduce el libro en el array de libros escritos del autor. En caso contrario, será necesario crear el autor de forma manual con el mismo nombre y usar la función PUT /autores/:idAutor/:idLibro para añadirlo a los libros escritos del autor (hasta entonces el campo 'autor' del libro será null)
 
 * __DELETE */libro/:id*__
 
