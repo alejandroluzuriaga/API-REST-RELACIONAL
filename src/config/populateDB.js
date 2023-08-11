@@ -56,8 +56,10 @@ const limpiarCampos = async () => {
 const updatedSeed = relationalSeed(seed);
 
 const main = async () => {
-  await Libro.collection.drop();
-  await Autor.collection.drop();
+  if (Libro.collection && Autor.collection){
+    await Libro.collection.drop();
+    await Autor.collection.drop();
+  }
   const autores = await Autor.insertMany(updatedSeed.autores)
   const libros = await Libro.insertMany(updatedSeed.libros);
   await relacionarAutoresconLibros(autores, libros)
